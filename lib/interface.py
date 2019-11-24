@@ -55,7 +55,7 @@ def combine(left, right):
     
     return comb   
 
-def plotXY(data,size = (280,640),margin = 25,name = "data",labels=[], skip = [],
+def plotXY(data,size = (30,100),margin = 25,name = "data",labels=[], skip = [],
            showmax = [], bg = None,label_ndigits = [], showmax_digits=[]):
     for x,y in data:
         if len(x) < 2 or len(y) < 2:
@@ -66,20 +66,7 @@ def plotXY(data,size = (280,640),margin = 25,name = "data",labels=[], skip = [],
     h = size[0]/float(n_plots)
     
     z = np.zeros((size[0],size[1],3))
-    
-    if isinstance(bg,np.ndarray):
-        wd = int(bg.shape[1]/bg.shape[0]*h )
-        bg = cv2.resize(bg,(wd,int(h)))
-        if len(bg.shape) == 3:
-            r = combine(bg[:,:,0],z[:,:,0])
-            g = combine(bg[:,:,1],z[:,:,1])
-            b = combine(bg[:,:,2],z[:,:,2])
-        else:
-            r = combine(bg,z[:,:,0])
-            g = combine(bg,z[:,:,1])
-            b = combine(bg,z[:,:,2])
-        z = cv2.merge([r,g,b])[:,:-wd,]    
-    
+
     i = 0
     P = []
     for x,y in data:
@@ -89,38 +76,21 @@ def plotXY(data,size = (280,640),margin = 25,name = "data",labels=[], skip = [],
         xx = (w-2*margin)*(x - x.min()) / (x.max() - x.min())+margin
         yy = (h-2*margin)*(y - y.min()) / (y.max() - y.min())+margin + i*h
         mx = max(yy)
-        if labels:
-            if labels[i]:
-                for ii in range(len(x)):
-                    if ii%skip[i] == 0:
-                        col = (255,255,255)
-                        ss = '{0:.%sf}' % label_ndigits[i]
-                        ss = ss.format(x[ii]) 
-                        cv2.putText(z,ss,(int(xx[ii]),int((i+1)*h)),
-                                    cv2.FONT_HERSHEY_PLAIN,1,col)           
         if showmax:
             if showmax[i]:
-                col = (0,255,0)    
+                col = (0,255,0)
                 ii = np.argmax(-y)
                 ss = '{0:.%sf} %s' % (showmax_digits[i], showmax[i])
                 ss = ss.format(x[ii]) 
                 #"%0.0f %s" % (x[ii], showmax[i])
-                cv2.putText(z,ss,(int(xx[ii]),int((yy[ii]))),
-                            cv2.FONT_HERSHEY_PLAIN,2,col)
-        
+                cv2.putText(z,ss,(1, 25),
+                            cv2.FONT_HERSHEY_PLAIN,1,col)
+
         try:
             pts = np.array([[x_, y_] for x_, y_ in zip(xx,yy)],np.int32)
             i+=1
             P.append(pts)
         except ValueError:
             pass #temporary
-    """ 
-    #Polylines seems to have some trouble rendering multiple polys for some people
-    for p in P:
-        cv2.polylines(z, [p], False, (255,255,255),1)
-    """
-    #hack-y alternative:
-    for p in P:
-        for i in range(len(p)-1):
-            cv2.line(z,tuple(p[i]),tuple(p[i+1]), (255,255,255),1)
     cv2.imshow(name,z)
+
