@@ -4,7 +4,9 @@ import cv2
 import pylab
 import os
 import sys
+import winsound
 
+count = 0
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -37,7 +39,7 @@ class findFaceGetPulse(object):
         self.t0 = time.time()
         self.bpms = []
         self.bpm = 0
-        dpath = resource_path("haarcascade_frontalface_alt.xml")
+        dpath = resource_path("haarcascade_frontalface_default.xml")
         if not os.path.exists(dpath):
             print("Cascade file not present!")
         self.face_cascade = cv2.CascadeClassifier(dpath)
@@ -120,6 +122,7 @@ class findFaceGetPulse(object):
         self.frame_out = self.frame_in
         self.gray = cv2.equalizeHist(cv2.cvtColor(self.frame_in,
                                                   cv2.COLOR_BGR2GRAY))
+
         col = (255, 255, 255)
         if self.find_faces:
             cv2.putText(
@@ -159,6 +162,18 @@ class findFaceGetPulse(object):
                    (10, 50), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
         cv2.putText(self.frame_out, "Press 'Esc' to quit",
                    (10, 75), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        detected = list(self.face_cascade.detectMultiScale(self.gray,
+                                                           scaleFactor=1.3,
+                                                           minNeighbors=4,
+                                                           minSize=(50, 50),
+                                                           flags=cv2.CASCADE_SCALE_IMAGE))
+
+        if len(detected) > 0:
+            detected.sort(key=lambda a: a[-1] * a[-2])
+
+            if self.shift(detected[-1]) > 10:
+                self.face_rect = detected[-1]
 
         forehead1 = self.get_subface_coord(0.5, 0.18, 0.25, 0.15)
         self.draw_rect(forehead1)
@@ -228,3 +243,13 @@ class findFaceGetPulse(object):
             tsize = 1
             cv2.putText(self.frame_out, text,
                        (int(x - w / 2), int(y)), cv2.FONT_HERSHEY_PLAIN, tsize, col)
+
+            global count
+            if self.bpm > 130:
+                count += 1
+            else:
+                count = 0
+            if count > 60:
+                winsound.PlaySound('sound.wav', winsound.SND_FILENAME)
+                count = 0
+                print('melody played')
