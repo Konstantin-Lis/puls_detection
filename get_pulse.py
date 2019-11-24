@@ -88,23 +88,20 @@ class getPulseApp(object):
         data quality, once a forehead has been sucessfully isolated.
         """
         state = self.processor.find_faces_toggle()
-        print("face detection lock =", not state)
 
     def toggle_display_plot(self):
         """
         Toggles the data display.
         """
         if self.bpm_plot:
-            print("bpm plot disabled")
             self.bpm_plot = False
             destroyWindow(self.plot_title)
         else:
-            print("bpm plot enabled")
             if self.processor.find_faces:
                 self.toggle_search()
             self.bpm_plot = True
             self.make_bpm_plot()
-            moveWindow(self.plot_title, self.w, 0)
+            moveWindow(self.plot_title, 0, 0)
 
     def make_bpm_plot(self):
         """
@@ -132,7 +129,6 @@ class getPulseApp(object):
 
         self.pressed = waitKey(10) & 255  # wait for keypress for 10 ms
         if self.pressed == 27:  # exit program on 'esc'
-            print("Exiting")
             for cam in self.cameras:
                 cam.cam.release()
             if self.send_serial:
