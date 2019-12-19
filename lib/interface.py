@@ -1,6 +1,10 @@
 import cv2, time
 import numpy as np
 
+lst = []
+cnt = 0
+pul = '60 bpm'
+
 """
 Wraps up some interfaces to opencv user interface methods (displaying
 image frames, event handling, etc).
@@ -81,9 +85,25 @@ def plotXY(data,size = (30,100),margin = 25,name = "data",labels=[], skip = [],
                 col = (0,255,0)
                 ii = np.argmax(-y)
                 ss = '{0:.%sf} %s' % (showmax_digits[i], showmax[i])
-                ss = ss.format(x[ii]) 
-                #"%0.0f %s" % (x[ii], showmax[i])
-                cv2.putText(z,ss,(1, 25),
+                ss = ss.format(x[ii])
+#                print(x[ii])
+
+                global lst
+                global cnt
+                global pul
+
+                if cnt == 10:
+                    pul = 0
+                    for j in lst:
+                        pul += j
+                    pul = str(int(pul/10))+' bpm'
+                    lst = []
+                    cnt = 0
+                else:
+                    lst.append(int(x[ii]))
+                    cnt += 1
+
+                cv2.putText(z,pul,(1, 25),
                             cv2.FONT_HERSHEY_PLAIN,1,col)
 
         try:
