@@ -3,6 +3,7 @@ import numpy as np
 
 lst = []
 cnt = 0
+зке = 0
 pul = '60 bpm'
 
 """
@@ -91,6 +92,13 @@ def plotXY(data,size = (30,100),margin = 25,name = "data",labels=[], skip = [],
                 global lst
                 global cnt
                 global pul
+                global ptr
+
+                if ptr == 24:
+                    print(x[ii])
+                    ptr = 0
+                else:
+                    ptr += 1
 
                 if cnt == 10:
                     pul = 0
