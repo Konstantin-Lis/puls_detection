@@ -3,7 +3,7 @@ import numpy as np
 
 lst = []
 cnt = 0
-зке = 0
+ptr = 0
 pul = '60 bpm'
 
 """
