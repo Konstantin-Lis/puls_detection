@@ -3,7 +3,6 @@ import numpy as np
 
 lst = []
 cnt = 0
-ptr = 0
 pul = '60 bpm'
 
 """
@@ -87,19 +86,12 @@ def plotXY(data,size = (30,100),margin = 25,name = "data",labels=[], skip = [],
                 ii = np.argmax(-y)
                 ss = '{0:.%sf} %s' % (showmax_digits[i], showmax[i])
                 ss = ss.format(x[ii])
-#                print(x[ii])
+                print(int(x[ii]))
 
                 global lst
                 global cnt
                 global pul
-                global ptr
-
-                if ptr == 24:
-                    print(x[ii])
-                    ptr = 0
-                else:
-                    ptr += 1
-
+                
                 if cnt == 10:
                     pul = 0
                     for j in lst:
